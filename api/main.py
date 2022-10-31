@@ -94,36 +94,38 @@ def get_hello_world():
 @app.route("/users", methods=["GET"])
 def get_all_users():
     keys_list = r.keys()
-    return_dict = {}
-    role_attrs = ['name']
+    _return_dict = {}
+    _role_attrs = ['name']
     try:
     
         email = request.authorization['username']
 
     except Exception:
         email = None
+    else:
+        is_user_is_admin = _is_user_is_admin(email)
 
     message, status = autorization_to_servise(email).values()
     if status:
-        if _is_user_is_admin(email):
-            role_attrs = dict(json.loads(r.get('0'))).keys()
+        if is_user_is_admin:
+            _role_attrs = dict(json.loads(r.get('0'))).keys()
 
         else:
             keys_list.remove('0')
-            role_attrs = ['email', 'name', 'favorite']
-
+            _role_attrs = ['email', 'name', 'favorite']
     else:
-        return_dict["message"] = message
+        keys_list.remove('0')
+        _return_dict["message"] = message
 
     for key in keys_list:
-        temp_dict = dict(json.loads(r.get(key)))
-        return_dict[key] = {}
-        for atr in role_attrs:
-            return_dict[key][atr] = temp_dict[atr]
+        _temp_dict = dict(json.loads(r.get(key)))
+        _return_dict[key] = {}
+        for _atr in _role_attrs:
+            _return_dict[key][_atr] = _temp_dict[_atr]
 
-    return return_dict
+    return _return_dict
 
-@app.route("/user", methods=["GET", "POST", "PATCH"])
+@app.route("/user", methods=["POST", "PATCH", "GET", "DELETE"])
 def user():
     if "id" not in request.args:
         return """you should add id key to your request"""
@@ -132,6 +134,29 @@ def user():
 
     if request.method == "POST":
         value = request.get_json()
+        if _is_user_registered(value.get("email")):
+            return """User already registered"""
+
+        try:
+            
+            log_email = request.authorization['username']
+
+        except Exception:
+            admin_role = False
+            
+        else:
+            message, status = autorization_to_servise(log_email).values()
+            if status and _is_user_is_admin(log_email):
+                try:
+                
+                    admin_role = True if f"{value['admin_role']}".lower() == "true" else False
+            
+                except Exception:
+                    admin_role = False
+            
+            else:
+                admin_role = False
+
         r.set(
             name=id,
             value=json.dumps(
@@ -140,15 +165,16 @@ def user():
                     "password": value.get("password", None),
                     "name": value.get("name", None),
                     "favorite": value.get("favorite", None),
+                    "admin_role": admin_role,
                     "registration_date": str(datetime.now())
                 }
             ),
-            ex=360 if (
-                value["email"]
-                and value["password"]
-                and value["name"]
-                and value["favorite"]
-            )else 36
+            # ex=360 if (
+            #     value["email"]
+            #     and value["password"]
+            #     and value["name"]
+            #     and value["favorite"]
+            # )else 36
         )
         return_value = r.get(id)
 
@@ -156,10 +182,46 @@ def user():
             return return_value
 
     elif request.method == "PATCH":
-        current_value = json.loads(r.get(id))
+        try:
+            
+            current_value = json.loads(r.get(id))
 
-        email, password, name = current_value['email'], current_value['password'], current_value['name']
+        except Exception:
+            return f"""User with id: {id} are not found"""
+
+        try:
+            
+            log_email = request.authorization['username']
         
+        except Exception:
+            return """You should log in to the system"""
+
+        else:
+            message, status = autorization_to_servise(log_email).values()
+        
+        if status == False:
+            return message
+
+        if log_email != current_value['email'] and not _is_user_is_admin(log_email):
+            return f"""You can't chose the other user data's. The next id is your: {_get_id_by_email(log_email)}"""
+
+        email, password, name, favorite = \
+            current_value.get('email', None),\
+            current_value.get('password', None),\
+            current_value.get('name', None),\
+            current_value.get('favorite', None)
+
+        if _is_user_is_admin(log_email):
+            try:
+                
+                admin_role = True if f"{request.args['admin_role']}".lower() == "true" else False
+            
+            except Exception:
+                admin_role = False
+        
+        else:
+            admin_role = False
+
         try:
 
             email = f"{request.args['email']}"
@@ -180,6 +242,13 @@ def user():
 
         except Exception:
             pass
+        
+        try:
+            
+            favorite = f"{request.args['favorite']}"
+
+        except Exception:
+            pass
 
         r.set(
             name=id,
@@ -188,6 +257,8 @@ def user():
                     "email": email,
                     "password": password,
                     "name": name,
+                    "favorite": favorite,
+                    "admin_role": admin_role,
                     "registration_date": current_value["registration_date"]
                 }
             )
@@ -198,17 +269,69 @@ def user():
 
     elif request.method == "GET":
         user_value = r.get(id)
+        
+        if not user_value:
+            return f"""User with id: {id} are not found"""
 
-        return_dict= {}
-        role_attrs = ['name']
-        if _is_user_is_admin('email'):
-            role_attrs = dict(json.loads(r.get('0'))).keys()
+        _return_dict = {}
 
-        temp_dict = dict(json.loads(user_value))
-        return_dict = {}
-        for atr in role_attrs:
-            return_dict[atr] = temp_dict[atr]
 
-            return return_dict
+        _role_attrs = []
+        try:
+    
+            email = request.authorization['username']
 
-    return """key doesn't exists"""
+        except Exception:
+            email = None
+
+        message, status = autorization_to_servise(email).values()
+        if status:
+            if _is_user_is_admin(email) or json.loads(user_value).get("email") == email:
+                return json.loads(user_value)
+
+            else:
+                _temp_dict = dict(json.loads(user_value))
+                for _atr in ['email', 'name', 'favorite']:
+                    _return_dict[_atr] = _temp_dict[_atr]
+
+                return _return_dict
+        else:
+            _return_dict['message'] = message
+            _temp_dict = dict(json.loads(user_value))
+            _return_dict['name'] = _temp_dict['name']
+
+            return _return_dict
+
+    elif request.method == "DELETE":
+        if id == '0':
+            return """SUPER ADMIN CANNOT BE DELETED"""
+
+        try:
+            
+            log_email = request.authorization['username']
+        
+        except Exception:
+            return """You should autorize to delete account"""
+
+        else:
+            try:
+                
+                current_value = json.loads(r.get(id))
+                
+            except Exception:
+                return f"""User with id: {id} are not exists"""
+
+            messge, status = autorization_to_servise(log_email)
+            if status:
+                if log_email != current_value['email'] and not _is_user_is_admin(log_email):
+                    return """Only admin can delete other user account"""
+            
+            try:
+                r.delete(id)
+        
+            except Exception:
+                return f"""Cannot delete user with {id}"""
+            else:
+                return f"""User with id: {id} succesfulle deleted"""
+
+    return """Id doesn't exists"""
