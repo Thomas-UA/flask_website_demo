@@ -18,10 +18,12 @@ with r.pipeline() as pipe:
                     "email": user.get("email"),
                     "password": user.get("password"),
                     "name": user.get("name"),
-                    "registration_date": str(datetime.now())
+                    "registration_date": str(datetime.now()),
+                    "admin_role": user.get("admin_role", False),
+                    "favorite": user.get("favorite", "Do not declarated")
                 }
             ),
-            ex=360
+            # ex=360
         )
     pipe.execute()
 
