@@ -1,14 +1,13 @@
 import json
-from select import EPOLLONESHOT
-from redis_db import USERS
 
 from redis_db.main import r
 
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, g
+from requests.auth import HTTPDigestAuth
+
 
 app = Flask(__name__)
-app.config['SECRET_KEY']='Th1s1ss3cr3t'
 
 # key is id
 keys_list = r.keys()
@@ -46,7 +45,7 @@ def _get_id_by_email(email):
     if _is_user_in_db(email):
         for key in keys_list:
             if emails_dict[key] == email:
-                k = emails_dict[key]
+                k = key
                 break
 
     return k
@@ -70,20 +69,23 @@ def _is_user_is_admin(email):
     except Exception:
         return False
 
-def autorization_to_servise(email, password):
+def autorization_to_servise(email):
     key = _get_id_by_email(email)
     if key == None:
         return {"msg": "User not found", "status": False}
-
+    
     try:
 
-        return {"msg": "Password is incorrect", "status": False} \
-            if json.loads(r.get(key)).get("password") != password else \
-                {"msg": "Loggin successful", "status": True} 
-
-    except Exception:   
-        return {"msg": "Something going wrong", "status": False}   
+        password = request.authorization['password']
     
+    except Exception:
+        return {"msg": "Something going wrong", "status": False}
+
+    if  password != dict(json.loads(r.get(key))).get("password"):
+        return {"msg": "Password is incorrect", "status": False}
+
+    else:
+        return {"msg": "Loggin successful", "status": True} 
 
 @app.route("/hw", methods=["GET"])
 def get_hello_world():
@@ -91,14 +93,27 @@ def get_hello_world():
 
 @app.route("/users", methods=["GET"])
 def get_all_users():
-    keys_list = list(r.keys()).sort()
+    keys_list = r.keys()
     return_dict = {}
     role_attrs = ['name']
-    if _is_user_is_admin("email"):
-        role_attrs = dict(json.loads(r.get('0'))).keys()
+    try:
+    
+        email = request.authorization['username']
+
+    except Exception:
+        email = None
+
+    message, status = autorization_to_servise(email).values()
+    if status:
+        if _is_user_is_admin(email):
+            role_attrs = dict(json.loads(r.get('0'))).keys()
+
+        else:
+            keys_list.remove('0')
+            role_attrs = ['email', 'name', 'favorite']
 
     else:
-        keys_list.remove('0')
+        return_dict["message"] = message
 
     for key in keys_list:
         temp_dict = dict(json.loads(r.get(key)))
