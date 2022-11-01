@@ -3,8 +3,7 @@ import json
 from redis_db.main import r
 
 from datetime import datetime
-from flask import Flask, request, g
-from requests.auth import HTTPDigestAuth
+from flask import Flask, request
 
 
 app = Flask(__name__)
