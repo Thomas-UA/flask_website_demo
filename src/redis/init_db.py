@@ -1,12 +1,13 @@
 import json
 import redis
 
-from redis_db import USERS
+from src.redis.users_config import USERS
 
 from datetime import datetime
 
 
-r = redis.Redis(charset="utf-8", decode_responses=True, host="localhost", port=6379, db=0)
+r = redis.Redis(charset="utf-8", decode_responses=True, host="localhost", port=6379)
+
 
 for user in USERS:
     r.set(
@@ -23,5 +24,3 @@ for user in USERS:
         ),
         # ex=360
     )
-
-r.bgsave()
