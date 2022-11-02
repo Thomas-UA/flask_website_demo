@@ -1,29 +1,30 @@
 import json
-from api.roles import Admin, NonRegistered, Registered, UserOwner
+from src.api.roles import Admin, NonRegistered, Registered, UserOwner
 
 from src.redis.init_db import r
 
 from flask import request
 
 
-def _is_user_owner(key, username):
-    return username == json.loads(r.get(key).get('username'))
+def _is_user_is_admin(key):
+    return json.loads(r.get(key)).get('admin_role', False)
 
-def autorize(username, password):
+def autorize(email, password):
     all_keys = r.keys()
     for key in all_keys:
-        username_db = json.loads(r.get(key)).get('username')
+        email_db = json.loads(r.get(key)).get('email')
         password_db = json.loads(r.get(key)).get('password')
-        if username == username_db:      
+        if email == email_db:      
             if password == password_db:
                 return {
                     'msg': key,
-                    'status': False
+                    'email': email,
+                    'status': True
                 }
 
             else:
                 return {
-                    'msg': 'Forgot your password, call to super admin B)',
+                    'msg': 'Forgot your password?, call to super admin B)',
                     'status': False
                 }
 
@@ -35,44 +36,40 @@ def autorize(username, password):
 def autorize_to_system():
     try:
 
-        username = request.authorization['username']
+        email = request.authorization['username']
 
     except Exception:
-        return {'msg': 'Please input username in field', 'status': True}
+        return {
+            'msg': None,
+            #'Please input email in field'
+            'status': True
+        }
 
     else:
-        try:
             
-            password = request.authorization['password']
+        password = request.authorization['password']
 
-        except Exception:
+        if password == '':
             return {'msg': 'Please type your password', 'status': False}
 
         else:
-            return autorize(username, password)
+            return autorize(email, password)
 
 def create_user_builder():
-    # if users succesfully logged message get key
-    message, status = autorize_to_system()
-    if not status:
+    ats = autorize_to_system()
+    message, status = ats.get('msg'), ats.get('status')
+    if not message:
+        return NonRegistered()
+
+    elif not status:
         return message
-    
+
+    # if users succesfully logged message get key
     key = message
 
-    if json.loads(r.get(key)).get('admin_role', False):
-        user = Admin()
+    if _is_user_is_admin(key):
+        return Admin()
 
-    else:
-        try:
-
-            username = request.authorization['username']
-
-        except Exception:
-            user = NonRegistered()
-
-        if _is_user_owner(key, username):
-            user = UserOwner()
-            
-        user = Registered()
-
+    user = Registered()
+    user.email = ats.get('email')
     return user

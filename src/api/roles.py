@@ -1,12 +1,13 @@
 class NonRegistered():
-    list_of_data = ['name']
+    list_of_fields = ['name']
 
 class Registered():
-    list_of_data = ['name', 'favorite']
-    
-class UserOwner():
-    list_of_data = None
-    def change_username(new_username):
+    list_of_fields = ['name', 'favorite']
+    email = None
+
+class UserOwner(Registered):
+    list_of_fields = ['email', 'password', 'name', 'favorite']
+    def change_email(new_email):
         pass
 
     def change_password(new_password):
@@ -19,6 +20,6 @@ class UserOwner():
         pass
 
 class Admin(UserOwner):
-    list_of_data = None
+    list_of_fields = None
     def set_admin_role():
         pass
