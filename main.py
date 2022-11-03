@@ -1,7 +1,8 @@
 from src.api import app
+
+from src.api.calls import create_user, get_user
 from src.api.errors import errors
 from src.api.hello_world import hello_world
-from src.api.calls import get_user
 
 
 if __name__ == "__main__":
