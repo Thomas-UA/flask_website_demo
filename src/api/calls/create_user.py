@@ -7,17 +7,15 @@ from src.redis.init_db import r
 from flask import request
 
 
-DICT_EXAMPLE = {}
 
 def _generate_uniq_username(all_keys, user_name, count=1):
     if user_name not in all_keys:
         return user_name
 
-    user_id = user_name.join(str(count))
-    if user_id in all_keys:
-        _generate_uniq_username(all_keys, user_id, count+1)
+    if user_name.join(str(count)) in all_keys:
+        _generate_uniq_username(all_keys, user_name, count+1)
 
-    return user_id
+    return user_name.join(str(count))
 
 def _generate_username(name: str):
     all_keys = r.keys()

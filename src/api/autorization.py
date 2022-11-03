@@ -1,13 +1,11 @@
 import json
-from src.api.roles import Admin, NonRegistered, Registered, UserOwner
 
+from src.api.permissions import is_user_is_admin
+from src.api.roles import Admin, NonRegistered, Registered
 from src.redis.init_db import r
 
 from flask import request
 
-
-def _is_user_is_admin(key):
-    return json.loads(r.get(key)).get('admin_role', False)
 
 def autorize(email, password):
     all_keys = r.keys()
@@ -67,7 +65,7 @@ def create_user_builder():
     # if users succesfully logged message get key
     key = message
 
-    if _is_user_is_admin(key):
+    if is_user_is_admin(key):
         return Admin()
 
     user = Registered()

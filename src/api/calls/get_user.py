@@ -3,19 +3,12 @@ import json
 from src.api import app
 from src.api.autorization import create_user_builder
 from src.api.roles import UserOwner
+from src.api.permissions import is_user_owner
 
 from src.redis.init_db import r
 
 from flask import request
 
-
-def _is_user_owner(key, email):
-    try:
-
-        return email == json.loads(r.get(key)).get('email')
-
-    except Exception:
-        return False
 
 def _get_users(fields):
     all_keys = r.keys()
@@ -34,25 +27,25 @@ def _get_users(fields):
             yield limited_dict
             limited_dict = {}
 
-def _get_user(id, fields):
+def _get_user(user_id, fields):
     try:
 
-        data = json.loads(r.get(id))
+        data = json.loads(r.get(user_id))
 
     except Exception:
-        return f'User with id: {id} are not found'
+        return f'User with id: {user_id} are not found'
     else:
         if not fields:
             return data
 
         limited_dict = {}
-        limited_dict[id] = {}
+        limited_dict[user_id] = {}
         for field in fields:
-            limited_dict[id][field] = data.get(field)
+            limited_dict[user_id][field] = data.get(field)
 
         return limited_dict
 
-def _get_fields_by_permission(id=None):
+def _get_fields_by_permission(user_id=None):
     user_session = create_user_builder()
     if type(user_session) == str:
         # returning message
@@ -60,7 +53,7 @@ def _get_fields_by_permission(id=None):
 
     try:
 
-        is_user_is_owner = _is_user_owner(id, user_session.email)
+        is_user_is_owner = is_user_owner(user_id, user_session.email)
     
     except Exception:
         pass

@@ -1,6 +1,6 @@
 USERS = [
     {
-        "id": "admin",
+        "id": "super_admin",
         "email": "super_admin@m.com",
         "password": "admin",
         "name": "Super Admin B)",
