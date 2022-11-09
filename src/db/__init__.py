@@ -2,6 +2,23 @@ import sqlite3
 
 from src.db.users_config import USERS
 
+def get_all_user_info():
+    with sqlite3.connect("users.db") as db:
+        cursor_obj = db.cursor()
+        try:
+
+            database_result = cursor_obj.execute(
+                f"""
+                SELECT * FROM users
+                """
+            )
+
+        except Exception as e:
+            return f"Something going wrong. Error {e}"
+
+        else:
+            return [dict(zip(USERS[0].keys(), r)) for r in list(database_result)]
+
 def get_user_info(username: str):
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()

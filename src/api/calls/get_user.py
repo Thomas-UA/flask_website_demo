@@ -5,7 +5,7 @@ from src.api.autorization import create_user_builder
 from src.api.roles import UserOwner
 from src.api.permissions import is_user_owner
 
-from src.db import get_user_info
+from src.db import get_all_user_info, get_user_info
 
 from src.redis.init_db import r
 
@@ -71,11 +71,12 @@ def _get_fields_by_permission(user_id=None):
 
 @app.route('/users', methods=['GET'])
 def get_all_users():
+    """
     fields = _get_fields_by_permission()
     if type(fields) == str:
         return fields
-
-    return list(_get_users(fields))[::-1]
+    """
+    return get_all_user_info()
 
 @app.route('/user/<string:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
