@@ -7,6 +7,21 @@ from src.api.hello_world import hello_world
 from src.db.create_users import create_db
 
 
+# ToDo:
+# fix get_all_users_info()
+# currently returns
+# {
+#     "admin_role": "Not specified",
+#     "email": "super_admin@m.com",
+#     "favorite": "admin",
+#     "password": "super_admin",
+#     "username": 1
+# }
+# add autorization
+# add frontend
+# add last search (redis)
+
+
 if __name__ == "__main__":
     create_db()
     app.run(host='0.0.0.0', port=8080)

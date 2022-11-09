@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import sqlite3
 
 from src.db.users_config import USERS
@@ -9,7 +10,7 @@ def get_all_user_info():
 
             database_result = cursor_obj.execute(
                 f"""
-                SELECT * FROM users
+                SELECT Email, Username, Password, Favorite, Admin FROM users;
                 """
             )
 
@@ -17,7 +18,9 @@ def get_all_user_info():
             return f"Something going wrong. Error {e}"
 
         else:
-            return [dict(zip(USERS[0].keys(), r)) for r in list(database_result)]
+            database_result = cursor_obj.fetchall()
+            keys_json_db = ['email', 'username', 'password', 'favorite', 'admin']
+            return [dict(zip(keys_json_db, r)) for r in list(database_result)]
 
 def get_user_info(username: str):
     with sqlite3.connect("users.db") as db:

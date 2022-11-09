@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 
 from src.api import app
@@ -76,7 +77,11 @@ def get_all_users():
     if type(fields) == str:
         return fields
     """
-    return get_all_user_info()
+    all_users = get_all_user_info()
+    return_dict = {}
+    for user in all_users:
+        return_dict[user.pop('username')] = user
+    return OrderedDict(return_dict)
 
 @app.route('/user/<string:user_id>', methods=['GET'])
 def get_user_by_id(user_id):
