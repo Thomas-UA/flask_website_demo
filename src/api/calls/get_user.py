@@ -5,6 +5,8 @@ from src.api.autorization import create_user_builder
 from src.api.roles import UserOwner
 from src.api.permissions import is_user_owner
 
+from src.db import get_user_info
+
 from src.redis.init_db import r
 
 from flask import request
@@ -27,7 +29,9 @@ def _get_users(fields):
             yield limited_dict
             limited_dict = {}
 
-def _get_user(user_id, fields):
+def _get_user(user_id): #, fields):
+    return get_user_info(user_id)
+    '''
     try:
 
         data = json.loads(r.get(user_id))
@@ -44,6 +48,7 @@ def _get_user(user_id, fields):
             limited_dict[user_id][field] = data.get(field)
 
         return limited_dict
+    '''
 
 def _get_fields_by_permission(user_id=None):
     user_session = create_user_builder()
@@ -76,10 +81,10 @@ def get_all_users():
 def get_user_by_id(user_id):
     if not user_id:
         return 'You should add an Id for this operation'
-
+    '''
     fields = _get_fields_by_permission(user_id)
     if type(fields) == str:
         # returning error message
         return fields
-
-    return _get_user(user_id, fields)
+    '''
+    return _get_user(user_id), 200

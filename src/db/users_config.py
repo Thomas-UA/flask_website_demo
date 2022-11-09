@@ -1,20 +1,21 @@
 USERS = [
     {
-        "id": "super_admin",
+        "username": "super_admin",
         "email": "super_admin@m.com",
         "password": "admin",
-        "name": "Super Admin B)",
-        "admin_role": True
+        "name": "Super Admin",
+        "favorite": "Not specified",
+        "admin_role": 1
     },
     {
-        "id": "vroman",
+        "username": "vroman",
         "email": "v.roman@m.com",
         "password": "123456789",
         "name": "roman",
         "favorite": "Dunkirk"
     },
     {
-        "id": "salex",
+        "username": "salex",
         "email": "s_alex@m.com",
         "password": "987654321",
         "name": "Alexandra",
