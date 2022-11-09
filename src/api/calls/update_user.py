@@ -4,12 +4,13 @@ from src.api import app
 from src.api.autorization import create_user_builder
 from src.api.permissions import is_user_owner
 from src.api.roles import Admin, NonRegistered
+from src.db import update_user_db
 from src.redis.init_db import r
 
 from flask import request
 
 
-def _set_new_data(admin):
+def _set_new_data():
     return_dict = {}
     try:
 
@@ -42,16 +43,7 @@ def _set_new_data(admin):
 
     except Exception:
         pass
-    
-    if admin:
-        try:
-                
-            admin_role = True if f"{request.args['admin_role']}".lower() == "true" else False
-            return_dict['admin_role'] = admin_role
 
-        except Exception:
-            pass
-    
     return return_dict
 
 
@@ -59,7 +51,12 @@ def _set_new_data(admin):
 def update_user(user_name):
     if user_name == 'super_admin':
         return 'SUPER ADMIN CANNOT BE UPDATED'
+    
+    new_data = _set_new_data()
 
+    return update_user_db(user_name, new_data)
+
+"""
     user_session = create_user_builder()
     if type(user_session) == str:
         # returning message
@@ -109,3 +106,4 @@ def update_user(user_name):
             return f'User: {user_name} succefully updated. New values: {r.get(user_name)}'
 
     return "You don't have persmission to update other users account"
+"""

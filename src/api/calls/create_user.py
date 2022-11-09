@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 
 from src.api import app
+from src.db import create_user_db
 from src.redis.init_db import r
 
 from flask import request
@@ -61,15 +62,25 @@ def create_user():
     if not email:
         return 'If you want create user please input valid email and password in the registration form'
 
-    if _is_user_in_database(email):
-        return 'User already registered, call to super admin if you forgot your password B)'
+    # if _is_user_in_database(email):
+        # return 'User already registered, call to super admin if you forgot your password B)'
 
     password = _get_password()
     if not password:
         return 'Please input password in the registration form'
 
-    name = email.split('@')[0]
-    user_id = _generate_username(name)
+    username = email.split('@')[0]
+    # user_id = _generate_username(name)
+    return create_user_db(
+        {
+                "email": email,
+                "username": username,
+                "password": password,
+                "favorite": "Do not declarated",
+                "admin_role": 0,
+            }
+    )
+    """
     r.set(
         name=user_id,
         value=json.dumps(
@@ -86,3 +97,4 @@ def create_user():
     )
 
     return f'User created. Id: {user_id}. Data: {r.get(user_id)}'
+"""

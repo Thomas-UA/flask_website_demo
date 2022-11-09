@@ -2,6 +2,7 @@ from src.api import app
 from src.api.autorization import create_user_builder
 from src.api.permissions import is_user_owner
 from src.api.roles import Admin, NonRegistered
+from src.db import delete_user_db
 from src.redis.init_db import r
 
 
@@ -10,6 +11,9 @@ def delete_user(user_name):
     if user_name == 'super_admin':
         return 'SUPER ADMIN CANNOT BE DELETED'
 
+    return delete_user_db(user_name)
+    
+"""
     user_session = create_user_builder()
     if type(user_session) == str:
         # returning message
@@ -36,3 +40,4 @@ def delete_user(user_name):
             return f'User: {user_name} succefully deleted'
 
     return "You don't have persmission to delete other users account"
+"""
