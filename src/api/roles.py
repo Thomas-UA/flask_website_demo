@@ -1,12 +1,19 @@
 class NonRegistered():
-    list_of_fields = ['name']
+    list_of_fields = ['username']
 
 class Registered():
-    list_of_fields = ['name', 'favorite']
-    email = None
+    username = None
 
-class UserOwner(Registered):
-    list_of_fields = ['email', 'password', 'name', 'favorite']
+    list_of_fields = ['username', 'favorite']
+    
+    def __init__(self, username):
+        self.username = username
 
-class Admin(UserOwner):
+    def is_user_owner(self, query_username):
+        if self.username == query_username:
+            self.list_of_fields = None
+
+        return self.list_of_fields
+
+class Admin():
     list_of_fields = None

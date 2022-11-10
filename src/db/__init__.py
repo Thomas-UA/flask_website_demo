@@ -3,14 +3,32 @@ import sqlite3
 
 from src.db.users_config import USERS
 
-def get_all_user_info():
+def login_by_email_helper(email: str):
+    with sqlite3.connect("users.db") as db:
+        cursor_obj = db.cursor()
+        try:
+
+            database_result = cursor_obj.execute(f"""
+                SELECT username, password FROM users WHERE Email="{email}"
+            """)
+
+        except Exception as e:
+            return f"Something going wrong. Error {e}"
+
+        else:
+            database_result = cursor_obj.fetchone()
+            keys_json_db = ['username', 'password']
+            return dict(zip(keys_json_db, database_result))
+
+def get_all_user_info(fields):
+    db_fields = ", ".join(fields) if fields else "*"
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
         try:
 
             database_result = cursor_obj.execute(
                 f"""
-                SELECT Email, Username, Password, Favorite, Admin FROM users;
+                SELECT {db_fields} FROM users;
                 """
             )
 
@@ -19,24 +37,32 @@ def get_all_user_info():
 
         else:
             database_result = cursor_obj.fetchall()
-            keys_json_db = ['email', 'username', 'password', 'favorite', 'admin']
-            return [dict(zip(keys_json_db, r)) for r in list(database_result)]
+            k = list(USERS[0].keys())
+            if not fields:
+                k.insert(0, 'id')
+            return [dict(zip(k if not fields else fields, r)) for r in list(database_result)]
 
-def get_user_info(username: str):
+def get_user_info(username: str, fields):
+    db_fields = ", ".join(fields) if fields else "*"
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
         try:
 
-            database_result = cursor_obj.execute(f"""
-                SELECT * FROM users WHERE Username="{username}"
-            """)
+            database_result = cursor_obj.execute(
+                f"""
+                SELECT {db_fields} FROM users WHERE Username="{username}"
+                """
+            )
 
         except Exception as e:
             return f"Something going wrong. Error {e}"
 
         else:
             database_result = cursor_obj.fetchone()
-            return dict(zip(USERS[0].keys(), database_result))
+            k = list(USERS[0].keys())
+            if not fields:
+                k.insert(0, 'id')
+            return dict(zip(k if not fields else fields, database_result))
 
 def create_user_db(user: dict):
         with sqlite3.connect("users.db") as db:

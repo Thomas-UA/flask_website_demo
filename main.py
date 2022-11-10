@@ -1,5 +1,7 @@
 from src.api import app
 
+from src.api import check_role_temp
+from src.api import login
 from src.api.calls import create_user, delete_user, get_user, update_user
 from src.api.errors import errors
 from src.api.hello_world import hello_world
@@ -9,15 +11,7 @@ from src.db.create_users import create_db
 
 # ToDo:
 # fix get_all_users_info()
-# currently returns
-# {
-#     "admin_role": "Not specified",
-#     "email": "super_admin@m.com",
-#     "favorite": "admin",
-#     "password": "super_admin",
-#     "username": 1
-# }
-# add autorization
+# currently swap username and email
 # add frontend
 # add last search (redis)
 

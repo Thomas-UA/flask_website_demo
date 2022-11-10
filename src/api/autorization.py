@@ -1,13 +1,61 @@
+import datetime
 import json
-
-from src.api.permissions import is_user_is_admin
-from src.api.roles import Admin, NonRegistered, Registered
-from src.redis.init_db import r
+import jwt
 
 from flask import request
 
+from src.api import app
+from src.api.permissions import is_user_is_admin
+from src.api.roles import Admin, NonRegistered, Registered
+from src.db import get_user_info, login_by_email_helper
+from src.redis.init_db import r
+
+
+def decode_auth_token(auth_token):
+    """
+    Decodes the auth token
+    :param auth_token:
+    :return: integer|string
+    """
+    try:
+        payload = jwt.decode(auth_token, 'secret_string', algorithms=['HS256'])
+        return payload['sub']
+    except jwt.InvalidTokenError as e:
+        raise Exception('Invalid token. Please log in again.') from e
+
+def encode_auth_token(user_id):
+    """
+    Generates the Auth Token
+    :return: string
+    """
+    try:
+        payload = {
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            'iat': datetime.datetime.utcnow(),
+            'sub': user_id
+        }
+        return jwt.encode(
+            payload,
+            'secret_string',
+            algorithm='HS256'
+        )
+    except Exception as e:
+        return e
 
 def autorize(email, password):
+    try:
+
+        user = login_by_email_helper(email)
+
+    except Exception as e:
+        return f'Something going wrong. {e}'
+
+    if password == user.get('password'):
+        return encode_auth_token(user.get('username'))
+
+    return f'Password is incorrect'
+
+    """
     all_keys = r.keys()
     for key in all_keys:
         email_db = json.loads(r.get(key)).get('email')
@@ -30,6 +78,7 @@ def autorize(email, password):
         'msg': 'Your nickname are not stored in db. Create an acount',
         'status': False
     }
+    """
 
 def autorize_to_system():
     try:
@@ -37,37 +86,30 @@ def autorize_to_system():
         email = request.authorization['username']
 
     except Exception:
-        return {
-            'msg': None,
-            #'Please input email in field'
-            'status': True
-        }
+        return 'Please input email in field'
 
     else:
             
         password = request.authorization['password']
 
         if password == '':
-            return {'msg': 'Please type your password', 'status': False}
+            return 'Please type your password'
 
         else:
             return autorize(email, password)
 
 def create_user_builder():
-    ats = autorize_to_system()
-    message, status = ats.get('msg'), ats.get('status')
-    if not message:
+    head = request.headers.environ
+    token = str(head.get('HTTP_AUTHORIZATION')).split(" ")[-1]
+
+    try:
+        
+        username = decode_auth_token(token)
+    
+    except Exception:
         return NonRegistered()
+    else:
+        if username == 'super_admin':
+            return Admin()
 
-    elif not status:
-        return message
-
-    # if users succesfully logged message get key
-    key = message
-
-    if is_user_is_admin(key):
-        return Admin()
-
-    user = Registered()
-    user.email = ats.get('email')
-    return user
+    return Registered(username)
