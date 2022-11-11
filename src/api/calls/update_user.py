@@ -4,7 +4,7 @@ from src.api import app
 from src.api.autorization import create_user_builder
 from src.api.permissions import is_user_owner
 from src.api.roles import Admin, NonRegistered
-from src.db import update_user_db
+from src.db.helpers import update_user_db
 from src.redis.init_db import r
 
 from flask import request
@@ -15,31 +15,31 @@ def _set_new_data():
     try:
 
         email = f"{request.args['email']}"
-        return_dict['email'] = email
+        return_dict["email"] = email
 
     except Exception:
-            pass
+        pass
 
     try:
-            
+
         password = f"{request.args['password']}"
-        return_dict['password'] = password
-        
+        return_dict["password"] = password
+
     except Exception:
         pass
 
     try:
 
         name = f"{request.args['name']}"
-        return_dict['name'] = name
+        return_dict["name"] = name
 
     except Exception:
         pass
-        
+
     try:
-            
+
         favorite = f"{request.args['favorite']}"
-        return_dict['favorite'] = favorite
+        return_dict["favorite"] = favorite
 
     except Exception:
         pass
@@ -47,14 +47,12 @@ def _set_new_data():
     return return_dict
 
 
-@app.route('/update_user/<string:user_name>', methods=['PATCH'])
+@app.route("/update_user/<string:user_name>", methods=["PATCH"])
 def update_user(user_name):
-    if user_name == 'super_admin':
-        return 'SUPER ADMIN CANNOT BE UPDATED'
-    
     new_data = _set_new_data()
 
     return update_user_db(user_name, new_data)
+
 
 """
     user_session = create_user_builder()

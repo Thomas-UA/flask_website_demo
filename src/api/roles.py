@@ -1,11 +1,12 @@
-class NonRegistered():
-    list_of_fields = ['username']
+class NonRegistered:
+    list_of_fields = ["username"]
 
-class Registered():
+
+class Registered:
     username = None
 
-    list_of_fields = ['username', 'favorite']
-    
+    list_of_fields = ["username", "favorite"]
+
     def __init__(self, username):
         self.username = username
 
@@ -14,6 +15,3 @@ class Registered():
             self.list_of_fields = None
 
         return self.list_of_fields
-
-class Admin():
-    list_of_fields = None

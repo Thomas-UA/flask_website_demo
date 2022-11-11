@@ -3,22 +3,25 @@ import sqlite3
 
 from src.db.users_config import USERS
 
+
 def login_by_email_helper(email: str):
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
+        keys_json_db = ["username", "password"]
         try:
 
-            database_result = cursor_obj.execute(f"""
-                SELECT username, password FROM users WHERE Email="{email}"
-            """)
+            database_result = cursor_obj.execute(
+                f"""
+                SELECT {', '.join(keys_json_db)} FROM users WHERE Email="{email}"
+            """
+            )
 
-        except Exception as e:
-            return f"Something going wrong. Error {e}"
-
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
         else:
             database_result = cursor_obj.fetchone()
-            keys_json_db = ['username', 'password']
             return dict(zip(keys_json_db, database_result))
+
 
 def get_all_user_info(fields):
     db_fields = ", ".join(fields) if fields else "*"
@@ -32,15 +35,17 @@ def get_all_user_info(fields):
                 """
             )
 
-        except Exception as e:
-            return f"Something going wrong. Error {e}"
-
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
         else:
             database_result = cursor_obj.fetchall()
             k = list(USERS[0].keys())
             if not fields:
-                k.insert(0, 'id')
-            return [dict(zip(k if not fields else fields, r)) for r in list(database_result)]
+                k.insert(0, "id")
+            return [
+                dict(zip(k if not fields else fields, r)) for r in list(database_result)
+            ]
+
 
 def get_user_info(username: str, fields):
     db_fields = ", ".join(fields) if fields else "*"
@@ -54,24 +59,24 @@ def get_user_info(username: str, fields):
                 """
             )
 
-        except Exception as e:
-            return f"Something going wrong. Error {e}"
-
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
         else:
             database_result = cursor_obj.fetchone()
             k = list(USERS[0].keys())
             if not fields:
-                k.insert(0, 'id')
+                k.insert(0, "id")
             return dict(zip(k if not fields else fields, database_result))
 
+
 def create_user_db(user: dict):
-        with sqlite3.connect("users.db") as db:
-            cursor_obj = db.cursor()
+    with sqlite3.connect("users.db") as db:
+        cursor_obj = db.cursor()
 
-            try:
+        try:
 
-                cursor_obj.execute(
-                    f"""
+            cursor_obj.execute(
+                f"""
                         INSERT INTO users(
                         Email,
                         Username,
@@ -86,12 +91,13 @@ def create_user_db(user: dict):
                         {user.get('admin_role', 0)}
                     )
                     """
-                )
+            )
 
-            except Exception as e:
-                return f"Something going wrong. {e}"
-            else:
-                return f"User {user.get('username')} created"
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
+        else:
+            return f"User {user.get('username')} created"
+
 
 def _generate_query(new_data: dict):
     query_to_db = "SET "
@@ -101,10 +107,11 @@ def _generate_query(new_data: dict):
             query_to_db += f'{k}="{v}", '
     return query_to_db[:-2]
 
+
 def update_user_db(username: str, new_data: dict):
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
-        
+
         current_data = get_user_info(username)
         set_query = _generate_query(new_data)
 
@@ -114,28 +121,27 @@ def update_user_db(username: str, new_data: dict):
                 {set_query}
                 WHERE Username="{username}"
                 """
-            cursor_obj.execute(
-                q
-            )
-        
-        except Exception as e:
-            return f"Something going wrong. {e}"
+            cursor_obj.execute(q)
+
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
         else:
             return f"User {username} was updated"
+
 
 def delete_user_db(username: str):
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
 
         try:
-            
+
             cursor_obj.execute(
                 f"""
                 DELETE FROM users WHERE Username="{username}"
                 """
             )
-        
-        except Exception as e:
-            return f"Something going wrong. {e}"
+
+        except Exception:
+            raise f"Something going wrong.\n{Exception}"
         else:
             return f"User {username} deleted"

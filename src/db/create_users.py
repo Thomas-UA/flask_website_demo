@@ -3,6 +3,7 @@ import sqlite3
 
 from src.db.users_config import USERS
 
+
 def create_db():
     table = """CREATE TABLE IF NOT EXISTS users (
                 accountID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,8 +14,8 @@ def create_db():
                 Admin INTEGER
             );"""
 
-    if not os.path.exists('/home/pi/flask_api_service/users.db'):
-        with sqlite3.connect('users.db') as db:
+    if not os.path.exists("/home/pi/flask_api_service/users.db"):
+        with sqlite3.connect("users.db") as db:
             cursor_obj = db.cursor()
             cursor_obj.execute(table)
 
