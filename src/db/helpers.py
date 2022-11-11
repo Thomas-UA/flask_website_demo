@@ -12,14 +12,17 @@ def login_by_email_helper(email: str):
 
             database_result = cursor_obj.execute(
                 f"""
-                SELECT {', '.join(keys_json_db)} FROM users WHERE Email="{email}"
+                SELECT {', '.join(keys_json_db)} FROM users WHERE email="{email}"
             """
             )
 
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             database_result = cursor_obj.fetchone()
+            if not database_result:
+                return f"User with email {email} not registered"
+
             return dict(zip(keys_json_db, database_result))
 
 
@@ -36,7 +39,7 @@ def get_all_user_info(fields):
             )
 
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             database_result = cursor_obj.fetchall()
             k = list(USERS[0].keys())
@@ -60,9 +63,11 @@ def get_user_info(username: str, fields):
             )
 
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             database_result = cursor_obj.fetchone()
+            if not database_result:
+                return None
             k = list(USERS[0].keys())
             if not fields:
                 k.insert(0, "id")
@@ -93,8 +98,10 @@ def create_user_db(user: dict):
                     """
             )
 
+        except sqlite3.IntegrityError:
+            return f"User already registered. Call to super admin if u forgot password"
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             return f"User {user.get('username')} created"
 
@@ -112,7 +119,6 @@ def update_user_db(username: str, new_data: dict):
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
 
-        current_data = get_user_info(username)
         set_query = _generate_query(new_data)
 
         try:
@@ -124,7 +130,7 @@ def update_user_db(username: str, new_data: dict):
             cursor_obj.execute(q)
 
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             return f"User {username} was updated"
 
@@ -142,6 +148,6 @@ def delete_user_db(username: str):
             )
 
         except Exception:
-            raise f"Something going wrong.\n{Exception}"
+            raise Exception("Something going wrong")
         else:
             return f"User {username} deleted"

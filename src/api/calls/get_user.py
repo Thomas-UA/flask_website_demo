@@ -20,7 +20,9 @@ def _get_users(fields):
 
 def _get_user(user_id, fields):
     user_info = get_user_info(user_id, fields)
-    return user_info
+    if not user_info:
+        return f"User {user_id} not found"
+    return OrderedDict(user_info)
 
 
 def _get_fields_by_permission(query_user):
@@ -40,7 +42,7 @@ def get_all_users():
     return_dict = {}
     for user in all_users:
         return_dict[user.pop("username")] = user
-    return OrderedDict(return_dict), 200
+    return return_dict, 200
 
 
 @app.route("/user/<string:user_id>", methods=["GET"])
@@ -50,4 +52,4 @@ def get_user_by_id(user_id):
 
     fields = _get_fields_by_permission(user_id)
 
-    return OrderedDict(_get_user(user_id, fields)), 200
+    return _get_user(user_id, fields), 200

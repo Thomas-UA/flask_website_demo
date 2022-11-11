@@ -6,7 +6,7 @@ from flask import request
 
 from src.api import app
 from src.api.permissions import is_user_is_admin
-from src.api.roles import Admin, NonRegistered, Registered
+from src.api.roles import NonRegistered, Registered
 from src.db.helpers import get_user_info, login_by_email_helper
 from src.redis.init_db import r
 
@@ -67,7 +67,7 @@ def autorize_to_system():
         password = request.authorization["password"]
 
         if password == "":
-            return "Please type your password"
+            return "Please input your password"
 
         else:
             return autorize(email, password)

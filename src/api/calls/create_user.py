@@ -19,12 +19,12 @@ def _get_email():
         if (email or email.split("@")[0]) == "":
             return {
                 "msg": "Please input a valid email. Example: 'user@m.com' or 'user'",
-                "status": True,
+                "status": False,
             }
 
     return {
         "msg": email if "@m.com" in email else email.join("@m.com"),
-        "status": False,
+        "status": True,
     }
 
 
