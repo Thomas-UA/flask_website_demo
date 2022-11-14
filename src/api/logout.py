@@ -4,5 +4,5 @@ from src.api import app
 
 @app.route("/logout")
 def logout():
-    session["name"] = None
+    session["token"] = None
     return redirect("/")

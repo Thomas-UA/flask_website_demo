@@ -1,6 +1,11 @@
 from flask import Response, redirect, render_template, request, session
 from src.api import app
-from src.api.autorization import AuthenticationError, autorize_to_system, decode_auth_token, encode_auth_token
+from src.api.autorization import (
+    AuthenticationError,
+    autorize_to_system,
+    decode_auth_token,
+    encode_auth_token,
+)
 from src.api.calls.get_user import get_user_by_id
 
 
@@ -15,6 +20,6 @@ def login_to_server():
             return Response(str(e), status=401)
 
         username = decode_auth_token(user_seesion_token)
-        session["name"] = username
+        session["token"] = user_seesion_token
         return redirect(f"/user/{username}")
-    return render_template('login.html')
+    return render_template("login.html")

@@ -2,10 +2,9 @@ import datetime
 import json
 import jwt
 
-from flask import request
+from flask import request, session
 
 from src.api import app
-from src.api.permissions import is_user_is_admin
 from src.api.roles import NonRegistered, Registered
 from src.db.helpers import get_user_info, login_by_email_helper
 from src.redis.init_db import r
@@ -13,6 +12,7 @@ from src.redis.init_db import r
 
 class AuthenticationError(Exception):
     pass
+
 
 def decode_auth_token(auth_token):
     """
@@ -77,12 +77,9 @@ def autorize_to_system():
 
 
 def create_user_builder():
-    head = request.headers.environ
-    token = str(head.get("HTTP_AUTHORIZATION")).split(" ")[-1]
-
     try:
 
-        username = decode_auth_token(token)
+        username = decode_auth_token(session["token"])
 
     except Exception:
         return NonRegistered()

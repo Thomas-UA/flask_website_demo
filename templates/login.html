@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 {% block header %}
     <a href='/'>Go to home page</a>
-    {% if session.name %}
+    {% if session.token %}
         <a href="/logout">logout</a>
     {% else %}
         <a href="/login">login</a>

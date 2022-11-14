@@ -1,7 +1,6 @@
 from flask import session
 from src.api import app
 
-from src.api import check_role_temp
 from src.api import login
 from src.api.calls import create_user, delete_user, get_user, update_user
 from src.api.errors import errors

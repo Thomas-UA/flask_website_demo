@@ -10,7 +10,3 @@ def is_user_owner(key, email):
 
     except Exception:
         return False
-
-
-def is_user_is_admin(key):
-    return json.loads(r.get(key)).get("admin_role", False)
