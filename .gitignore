@@ -3,4 +3,3 @@ __pycache__
 .vscode
 users.db
 pylint_issues.txt
-flask_session
