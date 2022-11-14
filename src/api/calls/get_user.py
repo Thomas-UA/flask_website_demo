@@ -10,7 +10,7 @@ from src.db.helpers import get_all_user_info, get_user_info
 
 from src.redis.init_db import r
 
-from flask import request
+from flask import render_template, request
 
 
 def _get_users(fields):
@@ -42,7 +42,7 @@ def get_all_users():
     return_dict = {}
     for user in all_users:
         return_dict[user.pop("username")] = user
-    return return_dict, 200
+    return render_template("users.html", users=json.dumps(return_dict))
 
 
 @app.route("/user/<string:user_id>", methods=["GET"])
@@ -51,5 +51,5 @@ def get_user_by_id(user_id):
         return "You should add an Id for this operation"
 
     fields = _get_fields_by_permission(user_id)
-
-    return _get_user(user_id, fields), 200
+    user = _get_user(user_id, fields)
+    return render_template("profile.html", user=json.dumps(user))

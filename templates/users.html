@@ -1,0 +1,12 @@
+{% extends 'main.html' %}
+{% block header %}
+    <a href='/'>Go to home page</a>
+    {% if session.name %}
+        <a href="/logout">logout</a>
+    {% else %}
+        <a href="/login">login</a>
+    {% endif %}
+{% endblock %}
+{% block content %}
+   {{users}}
+{% endblock %}

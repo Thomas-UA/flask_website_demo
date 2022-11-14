@@ -11,6 +11,9 @@ from src.db.helpers import get_user_info, login_by_email_helper
 from src.redis.init_db import r
 
 
+class AuthenticationError(Exception):
+    pass
+
 def decode_auth_token(auth_token):
     """
     Decodes the auth token
@@ -18,7 +21,7 @@ def decode_auth_token(auth_token):
     :return: integer|string
     """
     try:
-        payload = jwt.decode(auth_token, "secret_string", algorithms=["HS256"])
+        payload = jwt.decode(auth_token, app.config["SECRET_KEY"], algorithms=["HS256"])
         return payload["sub"]
     except jwt.InvalidTokenError as e:
         raise Exception("Invalid token. Please log in again.") from e
@@ -35,7 +38,7 @@ def encode_auth_token(user_id):
             "iat": datetime.datetime.utcnow(),
             "sub": user_id,
         }
-        return jwt.encode(payload, "secret_string", algorithm="HS256")
+        return jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
     except Exception as e:
         return e
 
@@ -57,17 +60,17 @@ def autorize(email, password):
 def autorize_to_system():
     try:
 
-        email = request.authorization["username"]
+        email = request.form["username"]
 
-    except Exception:
-        return "Please input email in field"
+    except Exception as e:
+        raise AuthenticationError from e
 
     else:
 
-        password = request.authorization["password"]
+        password = request.form["password"]
 
         if password == "":
-            return "Please input your password"
+            raise AuthenticationError("Please input your password")
 
         else:
             return autorize(email, password)
