@@ -1,3 +1,6 @@
 env
 __pycache__
 .vscode
+users.db
+pylint_issues.txt
+flask_session
