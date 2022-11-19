@@ -1,5 +1,6 @@
 env
 __pycache__
 .vscode
+.idea
 users.db
 pylint_issues.txt
