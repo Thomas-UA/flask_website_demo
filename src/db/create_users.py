@@ -14,7 +14,7 @@ def create_db():
                 Admin INTEGER
             );"""
 
-    if not os.path.exists("/home/pi/flask_api_service/users.db"):
+    if not os.path.abspath("users.db"):
         with sqlite3.connect("users.db") as db:
             cursor_obj = db.cursor()
             cursor_obj.execute(table)
