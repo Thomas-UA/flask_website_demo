@@ -1,6 +1,5 @@
 from src.api import app
 from src.api.autorization import create_user_builder
-from src.api.permissions import is_user_owner
 from src.api.roles import NonRegistered, Registered
 from src.db.helpers import delete_user_db
 from src.redis.init_db import r

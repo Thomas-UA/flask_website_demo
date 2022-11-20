@@ -1,6 +1,8 @@
 from collections import OrderedDict
 import sqlite3
 
+from flask import Response
+
 from src.db.users_config import USERS
 
 
@@ -17,13 +19,13 @@ def login_by_email_helper(email: str):
             )
 
         except Exception:
-            raise Exception("Something going wrong")
-        else:
-            database_result = cursor_obj.fetchone()
-            if not database_result:
-                return f"User with email {email} not registered"
+            raise Response(status=500)
 
-            return dict(zip(keys_json_db, database_result))
+        database_result = cursor_obj.fetchone()
+        if not database_result:
+            raise Response(status=401)
+
+        return dict(zip(keys_json_db, database_result))
 
 
 def get_all_user_info(fields):

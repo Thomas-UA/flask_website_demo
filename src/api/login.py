@@ -16,8 +16,8 @@ def login_to_server():
 
             user_seesion_token = autorize_to_system()
 
-        except AuthenticationError as e:
-            return Response(str(e), status=401)
+        except Exception:
+            return Response(status=401)
 
         username = decode_auth_token(user_seesion_token)
         session["token"] = user_seesion_token

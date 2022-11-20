@@ -2,7 +2,7 @@ import datetime
 import json
 import jwt
 
-from flask import request, session
+from flask import Response, request, session
 
 from src.api import app
 from src.api.roles import NonRegistered, Registered
@@ -10,8 +10,9 @@ from src.db.helpers import get_user_info, login_by_email_helper
 from src.redis.init_db import r
 
 
-class AuthenticationError(Exception):
-    pass
+class AuthenticationError(BaseException):
+    def __init__(self, message) -> None:
+        super().__init__(message)
 
 
 def decode_auth_token(auth_token):
@@ -44,12 +45,7 @@ def encode_auth_token(user_id):
 
 
 def autorize(email, password):
-    try:
-
-        user = login_by_email_helper(email)
-
-    except Exception as e:
-        return f"Something going wrong. {e}"
+    user = login_by_email_helper(email)
 
     if password == user.get("password"):
         return encode_auth_token(user.get("username"))
@@ -58,22 +54,7 @@ def autorize(email, password):
 
 
 def autorize_to_system():
-    try:
-
-        email = request.form["username"]
-
-    except Exception as e:
-        raise AuthenticationError from e
-
-    else:
-
-        password = request.form["password"]
-
-        if password == "":
-            raise AuthenticationError("Please input your password")
-
-        else:
-            return autorize(email, password)
+    return autorize(email=request.form["username"], password=request.form["password"])
 
 
 def create_user_builder():

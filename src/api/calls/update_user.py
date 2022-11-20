@@ -2,7 +2,6 @@ import json
 
 from src.api import app
 from src.api.autorization import create_user_builder
-from src.api.permissions import is_user_owner
 from src.api.roles import NonRegistered, Registered
 from src.db.helpers import update_user_db
 from src.redis.init_db import r
@@ -12,37 +11,10 @@ from flask import request
 
 def _set_new_data():
     return_dict = {}
-    try:
-
-        email = f"{request.args['email']}"
-        return_dict["email"] = email
-
-    except Exception:
-        pass
-
-    try:
-
-        password = f"{request.args['password']}"
-        return_dict["password"] = password
-
-    except Exception:
-        pass
-
-    try:
-
-        name = f"{request.args['username']}"
-        return_dict["username"] = name
-
-    except Exception:
-        pass
-
-    try:
-
-        favorite = f"{request.args['favorite']}"
-        return_dict["favorite"] = favorite
-
-    except Exception:
-        pass
+    return_dict["email"] = f"{request.args['email']}"
+    return_dict["password"] = f"{request.args['password']}"
+    return_dict["username"] = f"{request.args['username']}"
+    return_dict["favorite"] = f"{request.args['favorite']}"
 
     return return_dict
 

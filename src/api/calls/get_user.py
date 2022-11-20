@@ -4,7 +4,6 @@ import json
 from src.api import app
 from src.api.autorization import create_user_builder
 from src.api.roles import Registered
-from src.api.permissions import is_user_owner
 
 from src.db.helpers import get_all_user_info, get_user_info
 

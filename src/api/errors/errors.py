@@ -12,5 +12,9 @@ def internal_error_code_400(error):
 
 
 @app.errorhandler(404)
-def internal_error_code_400(error):
+def internal_error_code_404(error):
     return "Page doen't exists", 404
+
+@app.errorhandler(401)
+def internal_error_code_401(error):
+    return "User access error", 401
