@@ -2,14 +2,14 @@ from collections import OrderedDict
 import json
 
 from src.api import app
-from src.api.autorization import create_user_builder
+from src.api.autorization import create_user_builder, decode_auth_token
 from src.api.roles import Registered
 
 from src.db.helpers import get_all_user_info, get_user_info
 
 from src.redis.init_db import r
 
-from flask import render_template, request
+from flask import render_template, request, session
 
 
 def _get_users(fields):
@@ -41,6 +41,7 @@ def get_all_users():
     return_dict = {}
     for user in all_users:
         return_dict[user.pop("username")] = user
+
     return render_template("users.html", users=json.dumps(return_dict))
 
 
@@ -51,4 +52,8 @@ def get_user_by_id(user_id):
 
     fields = _get_fields_by_permission(user_id)
     user = _get_user(user_id, fields)
+    return render_template("profile.html", user=json.dumps(user))
+
+def get_my_profile():
+    user =  get_user_info(decode_auth_token(session["token"]), None)
     return render_template("profile.html", user=json.dumps(user))

@@ -1,4 +1,13 @@
 {% extends 'main.html' %}
 {% block content %}
    {{user}}
+   <form method="POST">
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password">
+
+      <label for="fav"><b>Favorite</b></label>
+      <input type="text" placeholder="Enter username" name="favorite">
+
+      <button type="submit">Update profile</button>
+   </form>
 {% endblock %}

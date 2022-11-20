@@ -114,23 +114,19 @@ def _generate_query(new_data: dict):
 
 
 def update_user_db(username: str, new_data: dict):
+    set_query = _generate_query(new_data)
+
     with sqlite3.connect("users.db") as db:
         cursor_obj = db.cursor()
 
-        set_query = _generate_query(new_data)
+        q = f"""
+            UPDATE users
+            {set_query}
+            WHERE Username="{username}"
+            """
 
-        try:
-            q = f"""
-                UPDATE users
-                {set_query}
-                WHERE Username="{username}"
-                """
-            cursor_obj.execute(q)
+        cursor_obj.execute(q)
 
-        except Exception:
-            raise Exception("Something going wrong")
-        else:
-            return f"User {username} was updated"
 
 
 def delete_user_db(username: str):
