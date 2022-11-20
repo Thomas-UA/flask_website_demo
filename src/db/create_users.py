@@ -5,16 +5,15 @@ from src.db.users_config import USERS
 
 
 def create_db():
-    table = """CREATE TABLE IF NOT EXISTS users (
+    table = """CREATE TABLE users (
                 accountID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Email TEXT NOT NULL UNIQUE,
                 Username TEXT NOT NULL UNIQUE,
                 Password TEXT NOT NULL,
-                Favorite TEXT,
-                Admin INTEGER
+                Favorite TEXT
             );"""
 
-    if not os.path.abspath("users.db"):
+    if not os.path.exists("users.db"):
         with sqlite3.connect("users.db") as db:
             cursor_obj = db.cursor()
             cursor_obj.execute(table)
@@ -25,13 +24,11 @@ def create_db():
                         Email,
                         Username,
                         Password,
-                        Favorite,
-                        Admin
+                        Favorite
                     ) VALUES (
                         "{user.get('email')}",
                         "{user.get('username')}",
                         "{user.get('password')}",
-                        "{user.get('favorite', 'Not specified')}",
-                        {user.get('admin_role', 0)}
+                        "{user.get('favorite', 'Not specified')}"
                     )"""
                 cursor_obj.execute(insert_query)

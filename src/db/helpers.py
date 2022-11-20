@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import sqlite3
 
-from flask import Response
+from flask import Response, redirect
 
 from src.db.users_config import USERS
 
@@ -88,24 +88,20 @@ def create_user_db(user: dict):
                         Email,
                         Username,
                         Password,
-                        Favorite,
-                        Admin
+                        Favorite
                     ) VALUES (
                         "{user['email']}",
                         "{user['username']}",
                         "{user['password']}",
-                        "{user.get('favorite', 'Do not declarated')}",
-                        {user.get('admin_role', 0)}
+                        "{user.get('favorite', 'Do not declarated')}"
                     )
                     """
             )
 
         except sqlite3.IntegrityError:
-            return f"User already registered. Call to super admin if u forgot password"
-        except Exception:
-            raise Exception("Something going wrong")
-        else:
-            return f"User {user.get('username')} created"
+            return False
+
+        return True
 
 
 def _generate_query(new_data: dict):
@@ -152,4 +148,4 @@ def delete_user_db(username: str):
         except Exception:
             raise Exception("Something going wrong")
         else:
-            return f"User {username} deleted"
+            return redirect("/logout")

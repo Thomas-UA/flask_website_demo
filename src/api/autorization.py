@@ -54,7 +54,7 @@ def autorize(email, password):
 
 
 def autorize_to_system():
-    return autorize(email=request.form["username"], password=request.form["password"])
+    return autorize(email=request.form["email"], password=request.form["password"])
 
 
 def create_user_builder():

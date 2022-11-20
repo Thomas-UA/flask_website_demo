@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block content %}
+    <form method="POST">
+        <label for="email"><b>Email</b></label>
+        <input type="text" placeholder="Enter email" name="email" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" required>
+
+        <label for="uname"><b>Username</b></label>
+        <input type="text" placeholder="Enter username" name="username">
+
+        <label for="fav"><b>Favorite</b></label>
+        <input type="text" placeholder="Enter username" name="favorite">
+
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}

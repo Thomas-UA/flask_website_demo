@@ -2,59 +2,34 @@ from datetime import datetime
 import json
 
 from src.api import app
+from src.api.login import login_to_server
 from src.db.helpers import create_user_db
 from src.redis.init_db import r
 
-from flask import request
+from flask import render_template, request
 
 
-def _get_email():
-    try:
-
-        email = request.authorization.get("username")
-
-    except Exception:
-        return {"msg": "Please input your email for registration", "status": False}
-    else:
-        if (email or email.split("@")[0]) == "":
-            return {
-                "msg": "Please input a valid email. Example: 'user@m.com' or 'user'",
-                "status": False,
-            }
-
-    return {
-        "msg": email if "@m.com" in email else email.join("@m.com"),
-        "status": True,
-    }
-
-
-def _get_password():
-    password = request.authorization.get("password")
-
-    if password == "":
-        return {"msg": "Please input password", "status": False}
-
-    return {"msg": password, "status": True}
-
-
-@app.route("/create", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def create_user():
-    email = _get_email()
-    if not email.get("status"):
-        return email.get("msg")
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+        username = email.split("@")[0] if not request.form["username"] else request.form["username"]
+        favorite = 'Not specified' if not request.form["favorite"] else request.form["favorite"]
 
-    password = _get_password()
-    if not password.get("status"):
-        return password.get("msg")
+        is_user_has_created = create_user_db(
+            {
+                "email": email,
+                "username": username,
+                "password": password,
+                "favorite": favorite,
+            }
+        )
 
-    username = email.get("msg").split("@")[0]
-    # user_id = _generate_username(name)
-    return create_user_db(
-        {
-            "email": email.get("msg"),
-            "username": username,
-            "password": password.get("msg"),
-            "favorite": "Do not declarated",
-            "admin_role": 0,
-        }
-    )
+        if not is_user_has_created:
+            return render_template("profile.html", user=f"User {username} is already registered")
+
+        else:
+            return login_to_server()
+
+    return render_template("register.html")
