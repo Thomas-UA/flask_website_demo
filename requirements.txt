@@ -10,3 +10,6 @@ PyJWT==2.6.0
 redis==4.4.0
 Werkzeug==2.2.2
 WTForms==3.0.1
+SQLAlchemy==1.4.44
+pydantic==1.10.2
+cryptography==38.0.4
