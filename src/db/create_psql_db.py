@@ -12,8 +12,10 @@ def create_psql_db():
             text(
                 ''' CREATE TABLE IF NOT EXISTS flask_users (
                         id SERIAL PRIMARY KEY,
-                        uname varchar(200) UNIQUE NOT NULL,
-                        pwhash varchar(512) NOT NULL
+                        uname text UNIQUE NOT NULL,
+                        pwhash text NOT NULL,
+                        favorite text,
+                        registration_date timestamp
                     )
                 '''
             )

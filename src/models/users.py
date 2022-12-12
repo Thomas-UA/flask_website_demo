@@ -1,6 +1,10 @@
+from typing import Optional
+from datetime import datetime
 from pydantic import BaseModel
 
 
-class Users(BaseModel):
+class UserModel(BaseModel):
     uname: str
-    pwhash: str
+    pwhash: bytes
+    favorite: Optional[str] = "not specified"
+    registration_date = datetime.now()
