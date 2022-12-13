@@ -6,11 +6,10 @@ from src.models.users import UserModel
 def add_user_to_db(uname: str, pwhash: bytes):
     user = UserModel(
         uname=uname,
-        pwhash=pwhash
+        pwhash=pwhash.decode('utf-8')
     )
     with engine.connect() as conn:
-        result = conn.execute(text(
-            f"INSERT INTO public.accounts (uname, pwhash, favorite, registration_date)"
+        conn.execute(text(
+            f"INSERT INTO flask_users (uname, pwhash, favorite, registration_date)"
             f"VALUES('{user.uname}', '{user.pwhash}', '{user.favorite}', '{user.registration_date}');")
         )
-        return result.fetchone()
