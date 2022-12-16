@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  postgres_db:
+    image: postgres:15.1-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+    ports:
+      - 5432:5432
+    networks:
+      - app-tier
+
+  python_app:
+    build: .
+    depends_on:
+      - postgres_db
+    ports:
+      - 8080:8080
+    networks:
+      - app-tier
+    volumes:
+      - .:/usr/src/app
+
+networks:
+  app-tier:
+    driver: bridge
