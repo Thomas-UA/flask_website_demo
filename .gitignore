@@ -2,3 +2,7 @@
 env
 __pycache__
 users.db
+
+# file for generate users in db
+# required for testing some features
+create_users.py

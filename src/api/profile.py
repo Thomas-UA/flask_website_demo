@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, current_app, session
 
 from src.db.find_user import user_data_for_page
-from src.models.users import UserFront
 
 user_profile_blueprint = Blueprint('user_profile_blueprint', __name__)
 

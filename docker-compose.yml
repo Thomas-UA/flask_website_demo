@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespw
     ports:
-      - 5432:5432
+      - "5432:5432"
     networks:
       - app-tier
 
@@ -16,7 +16,7 @@ services:
     depends_on:
       - postgres_db
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - app-tier
     volumes:
