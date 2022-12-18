@@ -8,13 +8,25 @@ def get_pwhash_by_username(uname: str):
         return pwhash.fetchone()
 
 
-def find_user_in_db(uname: str):
+def is_user_registered_in_db(uname: str):
     with engine.connect() as conn:
         user_info = conn.execute(text(f"SELECT uname FROM flask_users WHERE uname='{uname}'"))
         if not user_info.fetchone():
             return False
 
         return True
+
+
+def find_users_by_username(uname: str):
+    with engine.connect() as conn:
+        users = conn.execute(text(f"SELECT uname FROM flask_users WHERE uname LIKE '%{uname}%'"))
+        return users.fetchall()
+
+
+def find_users_by_favorite(favorite: str):
+    with engine.connect() as conn:
+        users = conn.execute(text(f"SELECT uname FROM flask_users WHERE favorite LIKE '%{favorite}%'"))
+        return users.fetchall()
 
 
 def user_data_for_page(uname: str):

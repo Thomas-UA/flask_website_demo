@@ -2,7 +2,7 @@ from cryptography.fernet import Fernet
 
 from flask import Blueprint, render_template, request, current_app, redirect, session
 
-from src.db.find_user import find_user_in_db
+from src.db.find_user import is_user_registered_in_db
 from src.db.add_user import add_user_to_db
 
 signup_blueprint = Blueprint('signup_blueprint', __name__)
@@ -19,7 +19,7 @@ def signup_page():
         current_app.logger.info(f"Password: {password}")
 
         current_app.logger.info(f"Trying to find user in db: {uname}")
-        is_user_registered = find_user_in_db(uname)
+        is_user_registered = is_user_registered_in_db(uname)
         if is_user_registered:
             current_app.logger.info(f"User: {uname} already registered")
             return redirect('/')

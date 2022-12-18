@@ -17,7 +17,31 @@
       <ul class="nav navbar-nav">
           <!-- class="active"> -->
           <li><a href="/">Home</a></li>
-          <li><a href="/hello_world">Hello World</a></li>
+          <!-- li><a href="/hello_world">Hello World</a></li -->
+          <div class="input-group rounded">
+              <input type="search" id="search-text" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+              <div class="input-group-btn search-panel">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                      <span id="search_concept">Search by</span> <span class="caret"></span>
+                    </button>
+                  <ul class="dropdown-menu" role="menu">
+                      <li><button id="search_by_username" onclick="searchByUsername()">Username</button></li>
+                      <li><button id="search_by_favorite" onclick="searchByFavorite()">Favorite</button></li>
+                      <script>
+                        function searchByUsername(){
+                            var searchText = document.getElementById('search-text').value;
+                            window.location.replace("/search_by_username/" + searchText);
+                        }
+                        function searchByFavorite(){
+                            var searchText = document.getElementById('search-text').value;
+                            window.location.replace("/search_by_favorite/" + searchText);
+                        }
+                      </script>
+                      <li class="divider"></li>
+                      <li><a href="#all">Random user</a></li>
+                  </ul>
+              </div>
+          </div>
       </ul>
       <ul class="nav navbar-nav navbar-right">
           {% if session.token %}
