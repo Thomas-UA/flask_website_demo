@@ -10,9 +10,10 @@ search_blueprint_favorite = Blueprint('search_blueprint_favorite', __name__)
 def find_users_by_username_front(username):
     if not username:
         return redirect('/')
-    current_app.logger.info(f"Criteria: {username}")
+
+    current_app.logger.info(f"Search username: {username}")
     list_of_users = find_users_by_username(username)
-    current_app.logger.info(f"List of users by {username}: {list_of_users}")
+    current_app.logger.info(f"List of users found by username - {username}: {list_of_users}")
     return render_template('search_result.html', list_of_users=list_of_users)
 
 
@@ -20,7 +21,8 @@ def find_users_by_username_front(username):
 def find_users_by_username_front(favorite):
     if not favorite:
         return redirect('/')
-    current_app.logger.info(f"Criteria: {favorite}")
+
+    current_app.logger.info(f"Search favorite: {favorite}")
     list_of_users = find_users_by_favorite(favorite)
-    current_app.logger.info(f"List of users by {favorite}: {list_of_users}")
+    current_app.logger.info(f"List of users users found by favorite - {favorite}: {list_of_users}")
     return render_template('search_result.html', list_of_users=list_of_users)

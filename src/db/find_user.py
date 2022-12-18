@@ -29,7 +29,13 @@ def find_users_by_favorite(favorite: str):
         return users.fetchall()
 
 
-def user_data_for_page(uname: str):
+def my_profile_data(uname: str):
     with engine.connect() as conn:
         info = conn.execute(text(f"SELECT uname, favorite FROM flask_users WHERE uname='{uname}'"))
+        return info.fetchone()
+
+
+def user_profile_data(uname: str):
+    with engine.connect() as conn:
+        info = conn.execute(text(f"SELECT uname FROM flask_users WHERE uname='{uname}'"))
         return info.fetchone()

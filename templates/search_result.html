@@ -1,4 +1,8 @@
 {% extends 'main.html' %}
 {% block content %}
-{{list_of_users}}
+{% for user in list_of_users %}
+    {% set profile_link = "/profile/" + user[0] %}
+    <a href="{{ profile_link }}">{{ user[0] }}</a>
+    <br>
+{% endfor %}
 {% endblock %}
