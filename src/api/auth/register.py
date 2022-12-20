@@ -28,6 +28,6 @@ def signup_page():
         add_user_to_db(uname, pwhash)
 
         session["token"] = uname
-        return redirect('/profile')
+        return redirect(f'/profile/{uname}')
 
     return render_template('register.html')
