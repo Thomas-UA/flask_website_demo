@@ -28,6 +28,6 @@ def login_page():
             current_app.logger.info(f"Password is incorrect")
 
         session["token"] = uname
-        return redirect("/profile")
+        return redirect(f"/profile/{uname}")
 
     return render_template('login.html')
