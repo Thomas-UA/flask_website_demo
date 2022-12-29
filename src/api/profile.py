@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, current_app, session, redirect, request
 
 from src.api.auth.user_role import user_factory
+from src.api.redis_db.get_data import get_data
+from src.api.redis_db.set_new_data import set_new_data
 from src.db.find_user import profile_data
 from src.db.update_user import update_favorite
 
@@ -15,8 +17,8 @@ def user_profile_page(user):
 
     user_session = user_factory(uname)
     current_app.logger.info(f"User type: {str(user_session)}")
-    info = profile_data(user, user_session.fields)
-    current_app.logger.info(f"User info: {info}")
+    user_info = profile_data(user, user_session.fields)
+    current_app.logger.info(f"User user_info: {user_info}")
     try:
 
         is_user_owner = user_session.is_user_owner(user)
@@ -27,6 +29,6 @@ def user_profile_page(user):
 
     else:
         if is_user_owner:
-            return render_template('my_profile.html', user=info)
+            return render_template('my_profile.html', user=user_info)
 
-    return render_template('profile.html', user=info)
+    return render_template('profile.html', user=user_info)
