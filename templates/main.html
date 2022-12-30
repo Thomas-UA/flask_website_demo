@@ -45,11 +45,11 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
           {% if session.token %}
-          <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-          <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+              <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+              <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
           {% else %}
-          <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-          <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+              <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+              <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
           {% endif %}
       </ul>
   </div>
@@ -58,6 +58,10 @@
 <div class="container">
   {% block content %}
   {% endblock %}
+</div>
+
+<div>
+    <p> Last registered for 10 minutes: {{last_registered_users}} </p>
 </div>
 
 </body>
