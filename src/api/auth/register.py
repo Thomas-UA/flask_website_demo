@@ -1,9 +1,12 @@
+import time
+
 from cryptography.fernet import Fernet
 
 from flask import Blueprint, render_template, request, current_app, redirect, session
 
 from src.db.find_user import is_user_registered_in_db
 from src.db.add_user import add_user_to_db
+from src.redis_db.set_new_data import set_new_data
 
 signup_blueprint = Blueprint('signup_blueprint', __name__)
 
@@ -28,6 +31,7 @@ def signup_page():
         add_user_to_db(uname, pwhash)
 
         session["token"] = uname
+        set_new_data({uname: ""})
         return redirect(f'/profile/{uname}')
 
     return render_template('register.html')

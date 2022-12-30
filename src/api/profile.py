@@ -1,10 +1,7 @@
-from flask import Blueprint, render_template, current_app, session, redirect, request
+from flask import Blueprint, render_template, current_app, session
 
 from src.api.auth.user_role import user_factory
-from src.api.redis_db.get_data import get_data
-from src.api.redis_db.set_new_data import set_new_data
 from src.db.find_user import profile_data
-from src.db.update_user import update_favorite
 
 my_profile_blueprint = Blueprint('my_profile_blueprint', __name__)
 user_profile_blueprint = Blueprint('user_profile_blueprint', __name__)
